@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { FiArrowRight, FiStar } from 'react-icons/fi';
 import { values, testimonials, news } from '../data/content.js';
 import { featuredProducts, productCatalog } from '../data/products.js';
+import useParallax from '../hooks/useParallax.js';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -14,8 +16,21 @@ const fadeUp = {
   })
 };
 
+function ProductCardMedia({ image, name }) {
+  const mediaRef = useRef(null);
+  const mediaParallax = useParallax(mediaRef, 36);
+
+  return (
+    <motion.div ref={mediaRef} style={{ y: mediaParallax }} className="parallax-media">
+      <img src={image} alt={name} loading="lazy" />
+    </motion.div>
+  );
+}
+
 export default function Home() {
   const heroProduct = productCatalog.find((product) => product.id === featuredProducts[0]);
+  const heroRef = useRef(null);
+  const heroParallax = useParallax(heroRef, 80);
 
   return (
     <>
@@ -48,10 +63,12 @@ export default function Home() {
             </div>
           </motion.div>
           <motion.div
+            ref={heroRef}
+            style={{ y: heroParallax }}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
-            className="hero-media"
+            className="hero-media parallax-media"
           >
             <img src={heroProduct.image} alt={heroProduct.name} loading="lazy" />
           </motion.div>
@@ -111,7 +128,7 @@ export default function Home() {
                   variants={fadeUp}
                   custom={index + 1}
                 >
-                  <img src={product.image} alt={product.name} loading="lazy" />
+                  <ProductCardMedia image={product.image} name={product.name} />
                   <div>
                     <h3>{product.name}</h3>
                     <p>{product.description}</p>
