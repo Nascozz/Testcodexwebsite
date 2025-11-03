@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { productCatalog, categories } from '../data/products.js';
 import { FiFilter, FiArrowRight } from 'react-icons/fi';
+import useParallax from '../hooks/useParallax.js';
 
 const filters = [
   { id: 'all', label: 'Tous' },
@@ -16,6 +17,17 @@ const cardVariants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 }
 };
+
+function CatalogCardMedia({ image, name }) {
+  const mediaRef = useRef(null);
+  const mediaParallax = useParallax(mediaRef, 34);
+
+  return (
+    <motion.div ref={mediaRef} style={{ y: mediaParallax }} className="parallax-media">
+      <img src={image} alt={name} loading="lazy" />
+    </motion.div>
+  );
+}
 
 export default function Products() {
   const [activeFilter, setActiveFilter] = useState('all');
@@ -66,7 +78,7 @@ export default function Products() {
                   variants={cardVariants}
                   transition={{ duration: 0.4, ease: 'easeOut' }}
                 >
-                  <img src={product.image} alt={product.name} loading="lazy" />
+                  <CatalogCardMedia image={product.image} name={product.name} />
                   <div>
                     <span style={{ color: 'var(--color-accent)', fontWeight: 600, textTransform: 'capitalize' }}>
                       {product.category}
